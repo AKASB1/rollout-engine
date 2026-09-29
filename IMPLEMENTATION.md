@@ -44,3 +44,7 @@ Start with FIFO and static batching. Then add:
 7. dynamic batching
 8. metrics and benchmark harness
 9. scheduling experiments
+
+## Scaffold checkpoint
+
+A deterministic local fake worker and request/result schema are in place. All external queue, GPU, and distributed milestones remain planned.

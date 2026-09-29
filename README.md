@@ -71,3 +71,7 @@ See [IMPLEMENTATION.md](IMPLEMENTATION.md).
 ## License
 
 MIT
+
+## Available now
+
+The importable local path provides request/result records, FIFO queueing, static model grouping, an echo worker, a verifier boundary, and result storage. Run `PYTHONPATH=src python -m unittest discover -s tests`. GPU and distributed components are planned.
