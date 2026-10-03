@@ -1,0 +1,49 @@
+{
+  "content_sha256": "25818ed4b455cc55e62dfd0c5f6ca5b3378946a4a4eba636f06b4ad994d1005a",
+  "generator": {
+    "name": "rollout-gen",
+    "params": {
+      "estimate": {
+        "error_sigma": 0.3,
+        "model": "group"
+      },
+      "groups": 64,
+      "max_tokens": 8192,
+      "n_samples": 8,
+      "prompt_fixed": null,
+      "tasks": {
+        "code": {
+          "len_median": 900,
+          "len_rho": 0.6,
+          "len_sigma": 1.1,
+          "prompt_max": 4096,
+          "prompt_median": 600,
+          "prompt_min": 32,
+          "prompt_sigma": 0.5,
+          "share": 0.4,
+          "verify_max_s": 60.0,
+          "verify_median_s": 2.0,
+          "verify_sigma": 1.0
+        },
+        "math": {
+          "len_median": 700,
+          "len_rho": 0.6,
+          "len_sigma": 1.1,
+          "prompt_max": 4096,
+          "prompt_median": 300,
+          "prompt_min": 32,
+          "prompt_sigma": 0.5,
+          "share": 0.6,
+          "verify_max_s": 10.0,
+          "verify_median_s": 0.2,
+          "verify_sigma": 0.3
+        }
+      }
+    },
+    "version": 1
+  },
+  "groups": 64,
+  "samples": 512,
+  "schema_version": 1,
+  "seed": 7
+}

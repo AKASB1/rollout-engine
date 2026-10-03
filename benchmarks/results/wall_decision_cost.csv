@@ -1,0 +1,25 @@
+what,part,size,wall_min_ms,wall_cpu_min_ms,actions
+policy_invocation,reference (fifo+group+early+round_robin),64,0.0412,0,8
+policy_invocation,reference (fifo+group+early+round_robin),512,0.527,0,64
+policy_invocation,reference (fifo+group+early+round_robin),4096,22.4634,15.625,512
+policy_invocation,fifo+sample+late+first_free,64,0.3079,0,64
+policy_invocation,fifo+sample+late+first_free,512,1.3604,0,256
+policy_invocation,fifo+sample+late+first_free,4096,2.5366,0,256
+policy_invocation,longest_first+sample+late+lpt,64,0.5515,0,64
+policy_invocation,longest_first+sample+late+lpt,512,2.6446,0,256
+policy_invocation,longest_first+sample+late+lpt,4096,7.5532,15.625,256
+policy_invocation,fifo+group+early+least_loaded,64,0.1041,0,8
+policy_invocation,fifo+group+early+least_loaded,512,0.9062,0,64
+policy_invocation,fifo+group+early+least_loaded,4096,23.132,15.625,512
+policy_invocation,online_adaptive,64,0.5614,0,64
+policy_invocation,online_adaptive,512,2.7173,0,256
+policy_invocation,online_adaptive,4096,7.0388,0,256
+policy_invocation,static dp,64,0.936,0,4
+policy_invocation,static dp,512,8.7516,0,8
+policy_invocation,static dp,4096,90.8417,78.125,8
+dp_solve,dp cap 16,64,0.4568,0,0
+dp_solve,dp cap 16,512,4.8601,0,0
+dp_solve,dp cap 16,4096,43.2997,31.25,0
+milp_solve,milp W3 cap6 (optimal),16,34.548,46.875,0
+milp_solve,milp W3 cap6 (optimal),32,722.316,1109.38,0
+milp_solve,milp W3 cap6 (optimal),64,674.057,781.25,0
