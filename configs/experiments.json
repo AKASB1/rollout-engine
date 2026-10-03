@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "description": "Benchmark scenarios S1-S7 and SENS (benchmarks/README.md). Everything is simulated with assumed parameters.",
+  "seeds": {
+    "tuning": [1000, 1001, 1002, 1003, 1004],
+    "evaluation": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    "sensitivity_evaluation": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "s7_tuning": {"start": 5000, "count": 50},
+    "s7_evaluation": {"start": 6000, "count": 50}
+  },
+  "quick": {
+    "evaluation": [1, 2, 3],
+    "steps": 12,
+    "scenarios": ["S1", "S2", "S3", "S5", "S7", "S8"],
+    "s7_count": 5,
+    "s2_policies": ["reference", "fifo+sample+late+first_free", "longest_first+sample+late+lpt", "online_adaptive", "online_eb", "oracle_lpt"]
+  },
+  "tuning": {
+    "budget": 6,
+    "search_seed": 2026,
+    "space": {
+      "window_groups": [4, 8, 16, 32, 64],
+      "k0": [0.5, 1, 2, 4, 8],
+      "rho": [1.25, 1.5, 2.0],
+      "batch_size": [2, 4, 8, 16],
+      "kappa": [1.5, 2.0, 3.0, 4.0],
+      "deadline": [0.5, 1.0, 1.5, 2.0]
+    }
+  },
+  "weights": {
+    "closed": {"alpha": 1.0, "beta": 0.5, "gamma": 0.25, "delta": 1.0, "epsilon": 1.0},
+    "single": {"alpha": 1.0, "beta": 0.5, "gamma": 1.0}
+  },
+  "tie_band": 0.01,
+  "system": {
+    "total_gpus": 16,
+    "rollout_gpus": 8,
+    "steps": 24,
+    "groups_per_step": 64,
+    "eta": 1,
+    "verifier_servers": 32,
+    "inflight": "drain"
+  },
+  "generator": {
+    "n_samples": 8,
+    "max_tokens": 8192,
+    "estimate": {"model": "group", "error_sigma": 0.3},
+    "groups_factor": 3
+  },
+  "tails": {"heavy": 1.1, "light": 0.4},
+  "S1": {"workers": 4, "caps": [8, 16], "samples": 64, "n_samples": 8, "prompt": 512,
+         "estimates": {"none": {"model": "none"}, "group_moderate": {"model": "group", "error_sigma": 0.5}, "group_exact": {"model": "group", "error_sigma": 0.0}}},
+  "S2": {"workers": 8, "groups": 64, "estimates": {"none": {"model": "none"}, "group": {"model": "group", "error_sigma": 0.3}}},
+  "S3": {"etas": [0, 1, 2, 4], "inflight_eta": 1, "inflight_modes": ["swap", "interrupt"]},
+  "S4": {"eta": 2, "rhos": [1.25, 1.5, 2.0]},
+  "S5": {"servers": [4, 8, 16, 32], "code_share": 0.7, "orders": ["fifo", "group_first", "shortest_first"]},
+  "S6": {"total_gpus": 16, "rollout_gpus": [4, 6, 8, 10, 12]},
+  "S7": {"sweep_n": [8, 16, 32, 48, 64, 96, 128, 192, 256], "sweep_workers": 3, "sweep_cap": 6, "sweep_seeds": [8000, 8001, 8002], "sweep_time_limit_s": 30},
+  "S10": {"eta": 1, "rhos": [1.25, 1.5, 2.0], "note": "Tier 2: deadline-aware admission against greedy carry"},
+  "S9": {"lams": [0.0, 0.5, 1.0, 2.0], "note": "Tier 2: scenario MILP with CVaR on the S7 instances (seeds s7_tuning / s7_evaluation)"},
+  "S8": {"eta": 2, "rho": 1.5, "shifts": {"none": null, "tail_heavier": {"len_sigma_factor": 1.3}, "estimates_degrade": {"error_sigma": 1.2}}},
+  "SENS": {"tail_factors": [0.75, 1.25], "error_levels": {"none": {"model": "none"}, "high": {"model": "group", "error_sigma": 1.0}}, "mfu": [0.2, 0.5], "rho": 1.5}
+}

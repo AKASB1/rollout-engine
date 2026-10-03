@@ -1,0 +1,17 @@
+{
+  "commit": "13993dfb7623c86146518f56a87b0fbd6fc847f5",
+  "dirty": false,
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i9-14900KF",
+    "logical_cpus": 32,
+    "os": "Windows 11 (10.0.26100)",
+    "ram_gb": 102.9
+  },
+  "note": "minimum of 5 repetitions; shared machine, other jobs may run",
+  "software": {
+    "highs": "1.2.0 (vendored by SciPy 1.13.1)",
+    "numpy": "1.26.4",
+    "python": "3.12.3",
+    "scipy": "1.13.1"
+  }
+}

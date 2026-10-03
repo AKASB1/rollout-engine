@@ -13,12 +13,20 @@ dist/
 build/
 *.egg-info/
 .ipynb_checkpoints/
-logs/
-tmp/
-outputs/
-runs/
-checkpoints/
+/logs/
+/tmp/
+/outputs/
+benchmarks/outputs/
+/checkpoints/
 wandb/
 .DS_Store
 .idea/
 .vscode/
+.claude/
+*.sqlite3
+*.db
+*.db-wal
+*.db-shm
+
+# Private planning notes
+*.local.md

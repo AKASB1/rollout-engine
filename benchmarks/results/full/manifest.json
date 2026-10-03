@@ -1,0 +1,510 @@
+{
+  "cells_hash": "789927507da58260",
+  "commit": "3310a8dca1f126a8dd61272f3106d4454292bc74",
+  "dirty": false,
+  "experiments_hash": "9297411cd16e92fa",
+  "hardware": {
+    "cpu": "Intel(R) Core(TM) i9-14900KF",
+    "logical_cpus": 32,
+    "os": "Windows 11 (10.0.26100)",
+    "ram_gb": 102.9
+  },
+  "label": "simulated, assumed parameters",
+  "mode": "full",
+  "objective_normalizers": {
+    "S1/cap16/group_exact": {
+      "R": 74.9208,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S1/cap16/group_moderate": {
+      "R": 74.9208,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S1/cap16/none": {
+      "R": 74.9208,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S1/cap8/group_exact": {
+      "R": 75.0638,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S1/cap8/group_moderate": {
+      "R": 75.0638,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S1/cap8/none": {
+      "R": 75.0638,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 1.0,
+        "phase": 1.0
+      }
+    },
+    "S10/eta1": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S2/heavy/group": {
+      "R": 83.2126,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 0.0,
+        "phase": 1.0
+      }
+    },
+    "S2/heavy/none": {
+      "R": 83.2126,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 0.0,
+        "phase": 1.0
+      }
+    },
+    "S2/light/group": {
+      "R": 27.407600000000002,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 0.0,
+        "phase": 1.0
+      }
+    },
+    "S2/light/none": {
+      "R": 27.407600000000002,
+      "source": "tuned",
+      "weights": {
+        "idle": 0.5,
+        "padding": 0.0,
+        "phase": 1.0
+      }
+    },
+    "S3/eta0": {
+      "R": 107.68383809523809,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S3/eta1": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S3/eta1-interrupt": {
+      "R": 90.7048380952381,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S3/eta1-swap": {
+      "R": 89.04591428571429,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S3/eta2": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S3/eta4": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S4/eta2": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S5/servers16": {
+      "R": 108.24844761904762,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S5/servers32": {
+      "R": 104.82672380952381,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S5/servers4": {
+      "R": 305.0513619047619,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S5/servers8": {
+      "R": 161.0943523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 0.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S6/colocated": {
+      "R": 94.86821904761905,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S6/rollout10": {
+      "R": 84.2692380952381,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.0,
+        "waste": 0.0
+      }
+    },
+    "S6/rollout12": {
+      "R": 81.92089523809526,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S6/rollout4": {
+      "R": 156.51705714285714,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.0,
+        "waste": 0.0
+      }
+    },
+    "S6/rollout6": {
+      "R": 138.0427238095238,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S6/rollout8": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 0.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 0.0
+      }
+    },
+    "S8/eta2/estimates_degrade": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S8/eta2/none": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "S8/eta2/tail_heavier": {
+      "R": 109.82694285714285,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/est_high": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/est_none": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/mfu0.2": {
+      "R": 89.07820952380953,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/mfu0.5": {
+      "R": 115.70170476190476,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/tail0.75": {
+      "R": 80.87866666666666,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S3eta1/tail1.25": {
+      "R": 113.71863809523809,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/est_high": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/est_none": {
+      "R": 100.16949523809524,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/mfu0.2": {
+      "R": 89.07820952380953,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/mfu0.5": {
+      "R": 115.70170476190476,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/tail0.75": {
+      "R": 80.87866666666666,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    },
+    "SENS/S4eta2/tail1.25": {
+      "R": 113.71863809523809,
+      "source": "tuned",
+      "weights": {
+        "bias": 1.0,
+        "idle": 0.5,
+        "step": 1.0,
+        "straggler": 0.25,
+        "waste": 1.0
+      }
+    }
+  },
+  "runs": 5300,
+  "s7": {
+    "instances": 50,
+    "milp_status": [
+      "optimal"
+    ]
+  },
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "software": {
+    "highs": "1.2.0 (vendored by SciPy 1.13.1)",
+    "numpy": "1.26.4",
+    "python": "3.12.3",
+    "scipy": "1.13.1"
+  },
+  "tuned_commit_note": "configs/tuned/tuned.json as committed at the commit above",
+  "tuned_hash": "6b690c6feeda2355",
+  "violations": [],
+  "wall_note": "wall_* files are wall-clock measurements on a shared machine (other jobs may run); they are excluded from every deterministic comparison",
+  "wall_total_s": 979.4,
+  "workers": 4
+}
