@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "description": "Benchmark scenarios S1-S7 and SENS (benchmarks/README.md). Everything is simulated with assumed parameters.",
+  "description": "Benchmark scenarios S1-S10 and SENS (benchmarks/README.md). Everything is simulated with assumed parameters.",
   "seeds": {
-    "tuning": [1000, 1001, 1002, 1003, 1004],
+    "tuning": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009],
     "evaluation": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     "sensitivity_evaluation": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     "s7_tuning": {"start": 5000, "count": 50},
@@ -29,7 +29,7 @@
   },
   "weights": {
     "closed": {"alpha": 1.0, "beta": 0.5, "gamma": 0.25, "delta": 1.0, "epsilon": 1.0},
-    "single": {"alpha": 1.0, "beta": 0.5, "gamma": 1.0}
+    "single": {"alpha": 1.0, "beta": 0.5, "gamma": 0.25}
   },
   "tie_band": 0.01,
   "system": {

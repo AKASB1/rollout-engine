@@ -2,9 +2,9 @@
 
     python scripts/plot_results.py [--results benchmarks/results/full] [--out docs/figures]
 
-Reads aggregate.csv, paired.csv, s7.csv, and wall_s7_sweep.csv; writes PNG figures (each
-below 300 KB) and ``tables.md`` beside the results. Everything shown is simulated with
-assumed parameters. Colours: a fixed categorical order (blue, orange, aqua, yellow, magenta,
+Reads aggregate.csv, paired.csv, s7.csv, s9.csv, and wall_s7_sweep.csv, and the S9 ranges in
+../s9_ties/summary.csv when present; writes PNG figures (each below 300 KB) and ``tables.md``
+beside the results. Everything shown is simulated with assumed parameters. Colours: a fixed categorical order (blue, orange, aqua, yellow, magenta,
 green, violet, red), never cycled; identity is also carried by markers and labels.
 """
 
@@ -83,6 +83,21 @@ class Results:
             with open(tpath, encoding="utf-8") as f:
                 self.tuned_lam = json.load(f).get("s9", {}).get("lam")
         self.sweep = read(os.path.join(root, "wall_s7_sweep.csv"))
+        # ranges over the plans that are optimal for each S9 planning model (scripts/s9_tie_ranges.py)
+        ties = os.path.join(os.path.dirname(os.path.normpath(root)), "s9_ties", "summary.csv")
+        self.s9_ties = {r["model"]: r for r in read(ties) if r.get("set") == "evaluation"}
+        if self.s9 and not self.s9_ties:
+            print(f"note: {ties} not found; the S9 figure and table show the returned plans only")
+        for key, tie in list(self.s9_ties.items()):  # the ranges must belong to the same evaluation
+            g = [
+                fnum(r[f"{key}_ratio"])
+                for r in self.s9
+                if r.get(f"{key}_ratio") not in (None, "", "nan")
+            ]
+            if not g or abs(sum(g) / len(g) - fnum(tie["ratio_returned"])) > 5e-5:
+                print(f"warning: {ties} does not match s9.csv for {key}; S9 ranges left out")
+                self.s9_ties = {}
+                break
 
     def m(self, s, v, p, metric):
         return self.agg.get((s, v, p, metric), (math.nan, math.nan, 0))
@@ -547,9 +562,24 @@ def fig_s9(R, out):
             xerr=1.96 * sd / math.sqrt(len(g)),
             error_kw={"elinewidth": 1, "ecolor": INK2},
         )
+        right = mu + 1.96 * sd / math.sqrt(len(g))
+        tie = R.s9_ties.get(key)
+        if tie:
+            lo, hi = 100 * (fnum(tie["ratio_best"]) - 1), 100 * (fnum(tie["ratio_worst"]) - 1)
+            ax.plot([lo, hi], [k + 0.36, k + 0.36], color=INK, lw=1.4, solid_capstyle="butt")
+            ax.plot(
+                [lo, lo, hi, hi],
+                [k + 0.28, k + 0.44, k + 0.28, k + 0.44],
+                ls="none",
+                marker="|",
+                ms=5,
+                color=INK,
+            )
+            right = max(right, hi)
         ax.annotate(
-            f"{mu:.1f} %",
-            (mu, k),
+            f"{mu:.1f} %"
+            + (f"  (optimal plans: {lo:.1f}-{hi:.1f} %)" if tie and hi - lo >= 0.05 else ""),
+            (right, k),
             textcoords="offset points",
             xytext=(18, -3),
             fontsize=7,
@@ -564,10 +594,18 @@ def fig_s9(R, out):
         fontsize=9,
         loc="left",
     )
-    note(
-        fig,
-        "simulated, assumed parameters; static engine; 95 % normal intervals across instances; lam chosen on the tuning instances",
-        top=1.0,
+    fig.tight_layout(rect=(0, 0.13, 1, 1.0))
+    fig.text(
+        0.01,
+        0.01,
+        "simulated, assumed parameters; static engine; lam chosen on the tuning instances. MILP plans: the bar is the plan HiGHS\n"
+        "returned, one of the plans that are optimal for the model (95 % normal interval across instances); the black line runs\n"
+        "from the best to the worst of those plans, each averaged over the instances (benchmarks/results/s9_ties).\n"
+        "dp policy: online re-planning, no solver choice.",
+        fontsize=7,
+        color=INK2,
+        ha="left",
+        va="bottom",
     )
     save(fig, out, "s9_risk.png")
 
@@ -755,8 +793,17 @@ def tables(R) -> str:
         out.append(
             f"\n**S9 (Tier 2): static plans made on estimates, replayed on the true lengths** ({len(R.s9)} evaluation instances)\n"
         )
-        out.append("| Plan | mean realized makespan / optimum | worst |")
-        out.append("|---|---|---|")
+        out.append(
+            "Realized makespan / clairvoyant optimum. A planning MILP can have several optimal plans with different "
+            "realized makespans, and the solver (HiGHS) returns one of them: for the MILP plans, the first and the last "
+            "column are the plan HiGHS returned, one choice among the optimal plans. The range is the mean over the "
+            "instances of the best and of the worst plan that is optimal for the model (`benchmarks/results/s9_ties/`); "
+            "the `dp` policy re-plans online and involves no solver choice.\n"
+        )
+        out.append(
+            "| Plan | mean, plan returned by the solver | range over the model's optimal plans | instances with a range | worst instance, returned plan |"
+        )
+        out.append("|---|---|---|---|---|")
         for key, lab in s9_plans(R):
             g = [
                 fnum(r[f"{key}_ratio"])
@@ -764,7 +811,14 @@ def tables(R) -> str:
                 if r.get(f"{key}_ratio") not in (None, "", "nan")
             ]
             if g:
-                out.append(f"| {lab} | {sum(g) / len(g):.3f} | {max(g):.3f} |")
+                tie = R.s9_ties.get(key)
+                rng = (
+                    f"{fnum(tie['ratio_best']):.3f}–{fnum(tie['ratio_worst']):.3f}"
+                    if tie
+                    else ("– (re-plans online)" if key == "dp_policy" else "–")
+                )
+                cnt = f"{tie['instances_with_range']} of {tie['instances']}" if tie else "–"
+                out.append(f"| {lab} | {sum(g) / len(g):.3f} | {rng} | {cnt} | {max(g):.3f} |")
     if R.s7:
         out.append(
             f"\n**S7 exact references** ({len(R.s7)} evaluation instances; statuses: {sorted({r['milp_status'] for r in R.s7})})\n"
@@ -780,6 +834,53 @@ def tables(R) -> str:
     return "\n".join(out) + "\n"
 
 
+# ----------------------------------------------------------------------------- README version
+def readme_s2(R, out):
+    """S2 in the default cell (heavy tail, group estimates) at README font sizes (880 px wide at
+    110 dpi; text 9.5 pt, titles and axis labels 11 pt; no tool metadata): for each launch order,
+    dispatch, and binding the best of its assignments, and the other policies. The four-cell figure
+    with every policy stays s2_policies.png."""
+    v = "heavy/group"
+    if v not in R.variants("S2"):
+        return
+    pols = [p for p in R.policies("S2", v) if p != "reference"]
+    ref = R.m("S2", v, "reference", "phase_time_s")[0]
+
+    def rel(p):
+        pr = R.paired.get(("S2", v, p, "phase_time_s"))
+        if not pr or not ref:
+            return math.nan, math.nan
+        return 100 * fnum(pr["diff_mean"]) / ref, 100 * fnum(pr["diff_ci"]) / ref
+
+    # one row per launch order, dispatch, and binding (the best of its assignments), plus the rest
+    best = {}
+    for p in pols:
+        key = p.rsplit("+", 1)[0] if p.count("+") == 3 else p
+        if key not in best or rel(p)[0] < rel(best[key])[0]:
+            best[key] = p
+    pols = sorted(best.values(), key=lambda p: rel(p)[0])
+    rc = {"font.size": 9.5, "axes.titlesize": 11, "axes.labelsize": 11}
+    with plt.rc_context(rc):
+        fig, ax = plt.subplots(figsize=(8.0, 0.3 * len(pols) + 1.5))
+        for k, p in enumerate(pols):
+            m, ci = rel(p)
+            c = CAT[2] if p.startswith("oracle") else (CAT[1] if p == "online_adaptive" else CAT[0])
+            ax.errorbar(
+                m, k, xerr=None if math.isnan(ci) else ci, fmt="o", ms=5, color=c, capsize=0
+            )
+        ax.axvline(0, color=INK2, lw=1)
+        ax.set_yticks(list(range(len(pols))))
+        ax.set_yticklabels(pols, fontsize=9.5)
+        ax.tick_params(axis="x", labelsize=9.5)
+        ax.set_xlabel("phase time against the reference (%, mean and 95 % interval)")
+        ax.set_title("S2, heavy tail with group estimates (simulated; lower is better)", loc="left")
+        fig.tight_layout()
+        path = os.path.join(out, "readme_s2.png")
+        fig.savefig(path, dpi=110, bbox_inches="tight", metadata={"Software": None})
+        plt.close(fig)
+        print(f"wrote {path}")
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default=os.path.join("benchmarks", "results", "full"))
@@ -789,7 +890,18 @@ def main(argv=None) -> int:
     R = Results(a.results)
     if not R.agg:
         raise SystemExit(f"no results in {a.results}")
-    for f in (fig_s1, fig_s2, fig_s3_s4, fig_s5_s6, fig_s7, fig_sens, fig_s8, fig_s9, fig_s10):
+    for f in (
+        fig_s1,
+        fig_s2,
+        fig_s3_s4,
+        fig_s5_s6,
+        fig_s7,
+        fig_sens,
+        fig_s8,
+        fig_s9,
+        fig_s10,
+        readme_s2,
+    ):
         f(R, a.out)
     with open(os.path.join(a.results, "tables.md"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(tables(R))

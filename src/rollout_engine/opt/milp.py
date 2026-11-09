@@ -34,6 +34,23 @@ class MilpResult:
     n_cons: int
 
 
+def milp_status(res) -> str:
+    """optimal | solver_capped | node_limit | infeasible | error for a ``scipy.optimize.milp`` result."""
+    msg = (res.message or "").lower()
+    if res.status == 0:
+        return "optimal"
+    if res.status == 1:
+        return "solver_capped" if "time" in msg else "node_limit"
+    if res.status == 2:  # SciPy's status 2 also covers HiGHS model errors
+        return "infeasible" if "infeasible" in msg else "error"
+    if res.status == 4 and "solution limit" in msg:
+        # SciPy 1.18 does not know HiGHS 1.12's model status 16 ("Solution limit reached"), which
+        # HiGHS uses for its node, leaf, and improving-solution limits; only the node limit is set
+        # here. With HiGHS 1.2 (SciPy 1.13) the node limit came as status 1
+        return "node_limit"
+    return "error"
+
+
 def segments(n: int, cap: int) -> list[tuple[int, int]]:
     return [(i, j) for i in range(n) for j in range(i, min(n, i + cap))]
 
@@ -117,15 +134,7 @@ def solve_makespan(
         options=opts,
     )
     wall, cpu = time.perf_counter() - t0, time.process_time() - c0
-    msg = (res.message or "").lower()
-    if res.status == 0:
-        status = "optimal"
-    elif res.status == 1:
-        status = "solver_capped" if "time" in msg else "node_limit"
-    elif res.status == 2:
-        status = "infeasible"
-    else:
-        status = "error"
+    status = milp_status(res)
     plan: list[list[tuple[int, int]]] = [[] for _ in range(W)]
     if res.x is not None:
         for s, seg in enumerate(segs):
@@ -153,5 +162,20 @@ def plan_makespan(plan, lengths_asc, cost) -> int:
     return max((sum(cost(j - i + 1, lengths_asc[j]) for i, j in segs) for segs in plan), default=0)
 
 
+def highs_version() -> str:
+    """Version of the HiGHS solver that SciPy vendors (behind ``scipy.optimize.milp``)."""
+    try:  # SciPy builds HiGHS through highspy since 1.15 and exposes its version there
+        from scipy.optimize._highspy import _core
+
+        return (
+            f"{_core.HIGHS_VERSION_MAJOR}.{_core.HIGHS_VERSION_MINOR}.{_core.HIGHS_VERSION_PATCH}"
+        )
+    except (ImportError, AttributeError):
+        # SciPy 1.13 and 1.14 have no version constant; their HiGHS banner reads 1.2.0,
+        # a placeholder in SciPy's build files
+        major, minor = (int(p) for p in scipy.__version__.split(".")[:2])
+        return "1.2.0" if (major, minor) < (1, 15) else "unknown"
+
+
 def solver_versions() -> dict:
-    return {"scipy": scipy.__version__, "highs": "1.2.0 (vendored by SciPy 1.13.1; banner)"}
+    return {"scipy": scipy.__version__, "highs": highs_version()}

@@ -79,7 +79,7 @@ The benchmark reports `lb_gap = gen_time / max(bounds) - 1` for every single-pha
 | estimate `est_tokens` | `none`: the task mean of the clipped length; `group`: the latent group mean (conditional mean of the clipped length given `z_group`) times `exp(error_sigma * u)` | `group` with `error_sigma = 0.3` (S1: 0.5 and 0; SENS: 1.0 and `none`) |
 | verifier time | log-normal per task, capped, whole ms | `math`: median 0.2 s, log-sd 0.3, cap 10 s; `code`: median 2 s, log-sd 1.0, cap 60 s (a sandbox running tests) |
 
-Distribution shift (Tier 2, S8): with `shift = {at_group, len_sigma_factor, error_sigma}`, the groups from position `at_group` on draw their log lengths with the spread multiplied by `len_sigma_factor` (same latent draws) and/or their estimate error with level `error_sigma`; their estimates keep the pre-shift calibration. Without `shift` the traces are byte-identical to before.
+Distribution shift (S8): with `shift = {at_group, len_sigma_factor, error_sigma}`, the groups from position `at_group` on draw their log lengths with the spread multiplied by `len_sigma_factor` (same latent draws) and/or their estimate error with level `error_sigma`; their estimates keep the pre-shift calibration. Without `shift` the traces are byte-identical to before.
 
 `verify_mean_s` in the system configuration is the uncapped log-normal mean `median * exp(sigma^2 / 2)` (0.209 s and 3.297 s), the only verifier information policies get. Check 10 tests every row of this table.
 
@@ -115,7 +115,7 @@ ns_per_token (trainer) = 6 * params / (training GPUs * peak * MFU)              
 
 KV capacity does not bind in the default system (`32 * (8192 + 4096) < 955 636`); `max_seqs` does. KV-limited admission is exercised by the tests. Two properties the benchmark needs hold under the reference policy (tuning seeds, window steps): generation of a batch takes 5.0 to 5.9 times as long as its training (89–104 s against 18 s), and a worker gets 64 samples per step, twice `max_seqs`.
 
-The linear iteration model sums memory and compute time instead of taking a roofline maximum; it has not been fitted to any measurement (calibration is a Tier 2 item and was not done).
+The linear iteration model sums memory and compute time instead of taking a roofline maximum; it has not been fitted to any measurement (calibration is a planned item and was not done).
 
 ## 10. What the model leaves out
 

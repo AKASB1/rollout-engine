@@ -27,16 +27,16 @@ Revised: the rollout simulator and the benchmark came before any external queue,
 - [x] 5. dynamic batching (iteration-level continuous engine; static engine with batch formation)
 - [x] 6. verifier service (pool with order policies; verifier workers in the live service)
 - [x] 7. optimization-based (DP, MILP, LPT) and online (`online_adaptive`) schedulers on the same traces
-- [ ] 8. Redis queue (the durable queue is sqlite3; a Redis adapter is Tier 3, not started)
-- [ ] 9. Ray worker pool (Tier 3, not started)
-- [ ] 10. vLLM adapter and scheduling experiments on real workers (Tier 3, not started)
+- [ ] 8. Redis queue (the durable queue is sqlite3; a Redis adapter is planned, not started)
+- [ ] 9. Ray worker pool (planned, not started)
+- [ ] 10. vLLM adapter and scheduling experiments on real workers (planned, not started)
 
 ## Decision problem
 
 - **Decisions:** which groups to launch from the stream and when (admission under the staleness bound), in which unit (group or sample) and on which worker (early or late binding, assignment), how to form static batches, which outstanding groups to drop, and which queued sample a freed verifier serves.
 - **Uncertainty:** the response length of every sample (only a group-level estimate before a sample of the group finishes; the finished samples of a group are evidence about the others), and the verifier time.
 - **Objective actually used** (`docs/contracts.md` section 4): closed loop `J = alpha * step_time / R_step + beta * gpu_idle_frac + gamma * P95(straggler) / R_step + delta * waste_frac + epsilon * |length_bias|`; single phase `J = alpha * phase_time / R_phase + beta * gpu_idle_frac + gamma * padding_frac`, with `R` the reference policy's value on the tuning seeds of the same cell and the weights of `configs/experiments.json` (a term that does not vary across policies more than its seed noise is weighted 0 in that cell, the same for every policy). The waste and bias terms stop a policy from winning by throwing data away.
-- The link to stochastic optimization is the length distribution: a policy plans on the prior estimate, adapts online from the finished samples of the same group, or (as a labelled oracle) knows the lengths.
+- The link to stochastic optimization is the length distribution: a policy plans on the prior estimate, adapts online from the finished samples of the same group, or (as a labeled oracle) knows the lengths.
 
 ## Evaluation and acceptance
 
@@ -48,4 +48,4 @@ The conventions (time, randomness, units, determinism, CSV and manifest rules) a
 
 ## Scaffold checkpoint
 
-Replaced. The scaffold's records, FIFO queue, echo worker, verifier boundary, and result store were superseded by the trace schema and core records, the group stream, the engine-backed mock worker, the verifier pool, and the sqlite3 store; its single test was rewritten with the same intent (`tests/test_rollout.py`). Current state: Tier 1 implemented and tested (see the README status); Tier 2 and Tier 3 as listed in the README `## TODO`.
+Replaced. The scaffold's records, FIFO queue, echo worker, verifier boundary, and result store were superseded by the trace schema and core records, the group stream, the engine-backed mock worker, the verifier pool, and the sqlite3 store; its single test was rewritten with the same intent (`tests/test_rollout.py`). Current state: the core is implemented and tested; what is not built is listed in the [limitations](benchmarks/README.md#limitations).

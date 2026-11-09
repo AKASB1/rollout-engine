@@ -1,0 +1,41 @@
+{
+  "code_committed": true,
+  "code_sha256": {
+    "scripts/s9_tie_ranges.py": "d334f6859ef63590ec58e9a45d0cd20d91fbb53ddbaaf04a1f6bb3f2b1ce07b8",
+    "src/rollout_engine/opt/milp.py": "7d42d073aa79261f6d1d0f015f510db10b2a51390e7aa96536e8643db16e5157",
+    "src/rollout_engine/opt/risk.py": "b5f6c76400c9e9d159e2fffbe4f49f159c38c0b7cf7f0d4d1218ed890750e114",
+    "src/rollout_engine/opt/s7.py": "bcd57ee2319e2facf71c739aa310bb4a147082d87d58267213585e42f203d540",
+    "src/rollout_engine/opt/scenario.py": "327cd9c955e801674aeadc35c98a440a2e20d1347d8a06b1f2bcc37f37396548",
+    "src/rollout_engine/opt/ties.py": "4cf57cfa16caae68a582bf2a2e2df682d62db4cee923db1ee6f362b7ff30fbec"
+  },
+  "command": "python scripts/s9_tie_ranges.py --workers 8",
+  "commit": "0855d051ce531c50736a841ecd607835f925dc09",
+  "dirty": false,
+  "hardware": {
+    "cpu": "x86-64 desktop CPU",
+    "logical_cpus": 32,
+    "os": "Windows 11"
+  },
+  "instances": {
+    "evaluation": "6000-6049",
+    "tuning": "5000-5049"
+  },
+  "label": "simulated, assumed parameters; ranges over the plans that are optimal for each planning model",
+  "lams": [
+    0.0,
+    0.5,
+    1.0,
+    2.0
+  ],
+  "problems": [],
+  "software": {
+    "highs": "1.12.0 (vendored by SciPy 1.18.1)",
+    "numpy": "2.5.4",
+    "python": "3.12.3",
+    "scipy": "1.18.1"
+  },
+  "time_limit_s": 60.0,
+  "tolerance_ms": 0.001,
+  "wall_total_s": 72.7,
+  "workers": 8
+}

@@ -1,73 +1,72 @@
 {
-  "cells_hash": "62b71d8dfa9264f1",
-  "commit": "9ed14313fdcf28f4afc3f9f7e370ec3a23110643",
+  "cells_hash": "8abb4e99d860a267",
+  "commit": "0855d051ce531c50736a841ecd607835f925dc09",
   "dirty": false,
-  "experiments_hash": "9297411cd16e92fa",
+  "experiments_hash": "02657da3acba7973",
   "hardware": {
-    "cpu": "Intel(R) Core(TM) i9-14900KF",
+    "cpu": "x86-64 desktop CPU",
     "logical_cpus": 32,
-    "os": "Windows 11 (10.0.26100)",
-    "ram_gb": 102.9
+    "os": "Windows 11"
   },
   "label": "simulated, assumed parameters",
   "mode": "quick",
   "objective_normalizers": {
     "S1/cap16/group_exact": {
-      "R": 74.9208,
+      "R": 65.8837,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S1/cap16/group_moderate": {
-      "R": 74.9208,
+      "R": 65.8837,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S1/cap16/none": {
-      "R": 74.9208,
+      "R": 65.8837,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S1/cap8/group_exact": {
-      "R": 75.0638,
+      "R": 68.2161,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S1/cap8/group_moderate": {
-      "R": 75.0638,
+      "R": 68.2161,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S1/cap8/none": {
-      "R": 75.0638,
+      "R": 68.2161,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
-        "padding": 1.0,
+        "padding": 0.25,
         "phase": 1.0
       }
     },
     "S2/heavy/group": {
-      "R": 83.2126,
+      "R": 79.7513,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
@@ -76,7 +75,7 @@
       }
     },
     "S2/heavy/none": {
-      "R": 83.2126,
+      "R": 79.7513,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
@@ -85,7 +84,7 @@
       }
     },
     "S2/light/group": {
-      "R": 27.407600000000002,
+      "R": 26.1373,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
@@ -94,7 +93,7 @@
       }
     },
     "S2/light/none": {
-      "R": 27.407600000000002,
+      "R": 26.1373,
       "source": "tuned",
       "weights": {
         "idle": 0.5,
@@ -103,7 +102,7 @@
       }
     },
     "S3/eta0": {
-      "R": 107.68383809523809,
+      "R": 107.07664285714286,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -114,7 +113,7 @@
       }
     },
     "S3/eta1": {
-      "R": 100.16949523809524,
+      "R": 100.60054761904762,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -125,7 +124,7 @@
       }
     },
     "S3/eta1-interrupt": {
-      "R": 90.7048380952381,
+      "R": 90.23225238095237,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -136,7 +135,7 @@
       }
     },
     "S3/eta1-swap": {
-      "R": 89.04591428571429,
+      "R": 88.59215238095238,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -147,7 +146,7 @@
       }
     },
     "S3/eta2": {
-      "R": 100.16949523809524,
+      "R": 100.60054761904762,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -158,7 +157,7 @@
       }
     },
     "S3/eta4": {
-      "R": 100.16949523809524,
+      "R": 100.60054761904762,
       "source": "tuned",
       "weights": {
         "bias": 0.0,
@@ -169,7 +168,7 @@
       }
     },
     "S5/servers16": {
-      "R": 108.24844761904762,
+      "R": 108.99963333333332,
       "source": "tuned",
       "weights": {
         "bias": 0.0,
@@ -180,7 +179,7 @@
       }
     },
     "S5/servers32": {
-      "R": 104.82672380952381,
+      "R": 105.44767142857143,
       "source": "tuned",
       "weights": {
         "bias": 0.0,
@@ -191,18 +190,18 @@
       }
     },
     "S5/servers4": {
-      "R": 305.0513619047619,
+      "R": 308.0280380952381,
       "source": "tuned",
       "weights": {
         "bias": 0.0,
         "idle": 0.5,
-        "step": 1.0,
+        "step": 0.0,
         "straggler": 0.25,
         "waste": 0.0
       }
     },
     "S5/servers8": {
-      "R": 161.0943523809524,
+      "R": 162.3693,
       "source": "tuned",
       "weights": {
         "bias": 0.0,
@@ -213,7 +212,7 @@
       }
     },
     "S8/eta2/estimates_degrade": {
-      "R": 100.16949523809524,
+      "R": 100.60054761904762,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -224,7 +223,7 @@
       }
     },
     "S8/eta2/none": {
-      "R": 100.16949523809524,
+      "R": 100.60054761904762,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -235,7 +234,7 @@
       }
     },
     "S8/eta2/tail_heavier": {
-      "R": 109.82694285714285,
+      "R": 108.80138571428571,
       "source": "tuned",
       "weights": {
         "bias": 1.0,
@@ -259,15 +258,16 @@
     3
   ],
   "software": {
-    "highs": "1.2.0 (vendored by SciPy 1.13.1)",
-    "numpy": "1.26.4",
+    "highs": "1.12.0 (vendored by SciPy 1.18.1)",
+    "numpy": "2.5.4",
     "python": "3.12.3",
-    "scipy": "1.13.1"
+    "scipy": "1.18.1"
   },
   "tuned_commit_note": "configs/tuned/tuned.json as committed at the commit above",
-  "tuned_hash": "6b690c6feeda2355",
+  "tuned_hash": "20d20444bf5f4916",
+  "tuned_matches_config": true,
   "violations": [],
   "wall_note": "wall_* files are wall-clock measurements on a shared machine (other jobs may run); they are excluded from every deterministic comparison",
-  "wall_total_s": 30.5,
+  "wall_total_s": 25.8,
   "workers": 4
 }

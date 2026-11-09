@@ -23,6 +23,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src"))
 
+from rollout_engine.opt.milp import highs_version  # noqa: E402
 from rollout_engine.opt.s7 import cost_fn, instance  # noqa: E402
 
 TIME_LIMIT = 60.0
@@ -156,7 +157,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default=os.path.join("benchmarks", "results", "solver_crosscheck.md"))
     ap.add_argument("--instances", type=int, default=50)
     a = ap.parse_args(argv)
-    solvers = [("SciPy milp (HiGHS 1.2.0)", solve_scipy)]
+    solvers = [(f"SciPy milp (HiGHS {highs_version()})", solve_scipy)]
     versions = {}
     try:
         import highspy

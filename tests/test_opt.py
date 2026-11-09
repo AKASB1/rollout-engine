@@ -184,3 +184,132 @@ def test_s9_risk_rows_are_consistent():
     assert row["optimum_status"] == "optimal"
     for k in ("det", "cvar0", "cvar1", "dp_policy"):
         assert row[f"{k}_ms"] >= row["optimum_ms"]  # nothing beats the clairvoyant optimum
+
+
+def test_manifests_record_the_vendored_highs_version():
+    import scipy
+
+    from rollout_engine.bench import output
+    from rollout_engine.opt.milp import highs_version, solver_versions
+
+    v = highs_version()
+    if tuple(int(p) for p in scipy.__version__.split(".")[:2]) >= (1, 15):
+        from scipy.optimize._highspy import _core  # the version SciPy itself reports
+
+        assert (
+            v
+            == f"{_core.HIGHS_VERSION_MAJOR}.{_core.HIGHS_VERSION_MINOR}.{_core.HIGHS_VERSION_PATCH}"
+        )
+    else:
+        assert v == "1.2.0"
+    assert output.software()["highs"] == f"{v} (vendored by SciPy {scipy.__version__})"
+    assert solver_versions() == {"scipy": scipy.__version__, "highs": v}
+
+
+def test_tie_ranges_match_brute_force_over_all_plans():
+    import itertools
+
+    from rollout_engine.opt.milp import segments
+    from rollout_engine.opt.ties import covers, model_objective, plan_value, realized_range
+
+    n, W, cap, S = 6, 2, 3, 3
+    segs = segments(n, cap)
+    est = [10, 10, 20, 20, 20, 30]  # estimate order; equal estimates make equal model costs
+    true = [12, 30, 18, 25, 41, 22]  # true lengths in the same order
+
+    def cost(b, length):
+        return 7 * b + length
+
+    def seg_costs(lengths):
+        return np.array([cost(j - i + 1, max(lengths[i : j + 1])) for i, j in segs], dtype=float)
+
+    rng = np.random.default_rng(3)
+    random_scen = np.ceil(np.array(est)[None, :] * rng.lognormal(0.0, 0.5, (S, n))).astype(int)
+    c_true = seg_costs(true)
+    c_det = seg_costs(est)[None, :]
+    c_random = np.array([seg_costs(list(random_scen[s])) for s in range(S)])
+    c_tied = np.repeat(c_det, S, axis=0)  # scenarios equal to the estimates keep the ties
+
+    def partitions(k):
+        if k == n:
+            yield []
+            return
+        for j in range(k, min(n, k + cap)):
+            for rest in partitions(j + 1):
+                yield [(k, j), *rest]
+
+    plans = [
+        [[seg for seg, w in zip(part, ws) if w == x] for x in range(W)]
+        for part in partitions(0)
+        for ws in itertools.product(range(W), repeat=len(part))
+    ]
+    cases = [
+        (None, c_det, True),
+        (0.0, c_tied, True),
+        (1.0, c_tied, True),
+        (0.0, c_random, False),
+        (1.0, c_random, False),
+    ]
+    for lam, c_model, tied in cases:
+        values = [
+            (model_objective(p, c_model, segs, lam), plan_value(p, c_true, segs)) for p in plans
+        ]
+        best = min(v for v, _ in values)
+        realized = [r for v, r in values if v <= best + 1e-9]
+        if tied:  # the case really has optimal plans that end at different times
+            assert min(realized) < max(realized)
+        for upper in (None, min(realized), max(realized)):  # bound from a known optimal plan
+            ends = realized_range(c_model, c_true, n, W, cap, best, lam, r_upper=upper)
+            (lo, s_lo, _, p_lo), (hi, s_hi, _, p_hi) = ends
+            assert s_lo == s_hi == "optimal"
+            assert (lo, hi) == (min(realized), max(realized))
+            for plan in (p_lo, p_hi):
+                assert covers(plan, n) and model_objective(plan, c_model, segs, lam) <= best + 1e-9
+
+
+def test_s9_tie_ranges_of_a_real_instance():
+    from rollout_engine.opt.ties import tie_row
+
+    # instance 6011: the extremes were also found by enumerating every plan, and they are the
+    # same on SciPy 1.13 (HiGHS 1.2) and 1.18 (HiGHS 1.12), whose returned plans differ
+    row = tie_row(6011, lams=(0.0, 0.5, 1.0, 2.0))
+    expected = {"det": (24870, 39784), **{f"cvar{lam:g}": (24870, 34442) for lam in (0, 0.5, 1, 2)}}
+    for m, lo_hi in expected.items():
+        assert row[f"{m}_formula_ok"] and row[f"{m}_extremes_ok"]
+        assert row[f"{m}_min_status"] == row[f"{m}_max_status"] == "optimal"
+        assert (row[f"{m}_min_ms"], row[f"{m}_max_ms"]) == lo_hi
+        assert lo_hi[0] <= row[f"{m}_ms"] <= lo_hi[1]
+
+
+def test_milp_status_reads_node_limits_of_both_highs_versions():
+    from types import SimpleNamespace
+
+    from rollout_engine.opt.milp import milp_status, solve_makespan
+
+    def res(status, message):
+        return SimpleNamespace(status=status, message=message)
+
+    assert milp_status(res(0, "Optimization terminated successfully.")) == "optimal"
+    assert milp_status(res(1, "Time limit reached. (HiGHS Status 13: Time limit reached)")) == (
+        "solver_capped"
+    )
+    assert milp_status(res(1, "Iteration limit reached. (HiGHS Status 14: ...)")) == "node_limit"
+    assert (
+        milp_status(
+            res(
+                4,
+                "The HiGHS status code was not recognized. (HiGHS Status 16: Solution limit reached)",
+            )
+        )
+        == "node_limit"
+    )
+    assert milp_status(res(2, "The problem is infeasible.")) == "infeasible"
+    assert milp_status(res(2, "(HiGHS Status 2: Model error)")) == "error"
+    assert milp_status(
+        res(4, "The HiGHS status code was not recognized. (HiGHS Status 18: ...)")
+    ) == ("error")
+    # a real stop at the node limit, whatever the installed SciPy reports for it
+    sysc, tr, _ = instance(8000, n=48, workers=3, cap=6)
+    L = sorted(g.resp_tokens[0] for g in tr.groups)
+    r = solve_makespan(L, 3, 6, cost_fn(sysc), node_limit=3, time_limit=30)
+    assert r.status == "node_limit" and r.nodes == 3

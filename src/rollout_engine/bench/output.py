@@ -145,11 +145,13 @@ def hardware() -> dict:
 
 
 def software() -> dict:
+    from rollout_engine.opt.milp import (
+        highs_version,
+    )  # loads scipy.optimize; only manifests need it
+
     return {
         "python": platform.python_version(),
         "numpy": np.__version__,
         "scipy": scipy.__version__,
-        "highs": "1.2.0 (vendored by SciPy 1.13.1)"
-        if scipy.__version__ == "1.13.1"
-        else "vendored by SciPy " + scipy.__version__,
+        "highs": f"{highs_version()} (vendored by SciPy {scipy.__version__})",
     }

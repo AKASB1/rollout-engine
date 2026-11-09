@@ -97,3 +97,17 @@ def test_benchmark_files_identical_in_fresh_processes_serial_and_parallel(tmp_pa
     for name in ("runs.csv", "aggregate.csv", "paired.csv"):
         data = [(o / name).read_bytes() for o in outs]
         assert data[0] == data[1] == data[2], name
+
+
+def test_full_evaluation_refuses_a_tuning_for_another_configuration(tmp_path):
+    """A tuned file whose config_hash differs from the configuration stops a full run before
+    any job runs or any file is written; quick mode only warns."""
+    from argparse import Namespace
+
+    from rollout_engine.bench.__main__ import evaluate
+
+    cfg = load_config()
+    stale = {"config_hash": "0" * 16, "R": {}, "weights": {}, "params": {}}
+    args = Namespace(quick=False, only="S1", out=str(tmp_path / "full"), workers=1)
+    assert evaluate(args, cfg, stale) == 2
+    assert not (tmp_path / "full").exists()

@@ -104,10 +104,12 @@ class HttpClient:
         reader, writer = await asyncio.open_connection(self.host, self.port)
         data = json.dumps(body).encode("utf-8") if body is not None else b""
         head = f"{method} {path} HTTP/1.1\r\nHost: {self.host}\r\nContent-Type: application/json\r\nContent-Length: {len(data)}\r\nConnection: close\r\n\r\n"
-        writer.write(head.encode("latin-1") + data)
-        await writer.drain()
-        raw = await reader.read()
-        writer.close()
+        try:
+            writer.write(head.encode("latin-1") + data)
+            await writer.drain()
+            raw = await reader.read()
+        finally:
+            writer.close()  # also when the request is cancelled
         try:
             await writer.wait_closed()
         except (ConnectionError, OSError):

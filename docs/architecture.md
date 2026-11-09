@@ -1,6 +1,6 @@
 # Architecture
 
-![framework](figures/framework.png)
+![Architecture: traces and the policies feed the scheduler core, which drives the simulator with its benchmark and the live service; the exact references feed the benchmark](figures/architecture.svg)
 
 ## Modules (`src/rollout_engine/`)
 

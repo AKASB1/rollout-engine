@@ -1,0 +1,11 @@
+set,model,instances,ratio_returned,ratio_best,ratio_worst,instances_with_range,instances_left_out,solves_retried
+evaluation,det,50,1.1299,1.05033,1.34963,33,0,0
+evaluation,cvar0,50,1.03329,1.03329,1.04099,1,0,0
+evaluation,cvar0.5,50,1.04191,1.04191,1.04961,1,0,1
+evaluation,cvar1,50,1.04677,1.04677,1.05446,1,0,0
+evaluation,cvar2,50,1.04953,1.04953,1.05723,1,0,0
+tuning,det,50,1.21627,1.08677,1.59927,44,0,0
+tuning,cvar0,50,1.0739,1.06711,1.13591,10,0,0
+tuning,cvar0.5,50,1.08409,1.07159,1.14038,10,0,0
+tuning,cvar1,50,1.07413,1.07385,1.13981,9,0,0
+tuning,cvar2,50,1.09382,1.0831,1.14906,9,0,1

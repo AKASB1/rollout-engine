@@ -1,0 +1,27 @@
+vars: {
+  d2-config: {
+    sketch: true
+    layout-engine: elk
+    pad: 24
+  }
+}
+classes: {
+  comp: {style: {fill: "#EDE4FA"; stroke: "#6D3FB3"; stroke-width: 2; font-size: 24; font-color: "#1F2328"; border-radius: 6}}
+  ext: {style: {fill: "#FFFFFF"; stroke: "#57606A"; stroke-width: 2; font-size: 24; font-color: "#1F2328"}}
+  store: {shape: cylinder; style: {fill: "#FFFFFF"; stroke: "#6D3FB3"; stroke-width: 2; font-size: 24; font-color: "#1F2328"}}
+  flow: {style: {stroke: "#424A53"; stroke-width: 2; font-size: 24; font-color: "#1F2328"}}
+}
+direction: right
+
+trace: "traces\ngroups · lengths" {class: store}
+policies: "policies\nestimators · placement" {class: comp}
+core: "scheduler core\nstate machine" {class: comp}
+opt: "exact references\nDP · MILP · LPT" {class: comp}
+sim: "simulator, benchmark\nS1–S10 · SENS" {class: comp}
+service: "live service\nHTTP · mock workers" {class: comp}
+
+trace -> core {class: flow}
+policies -> core {class: flow}
+core -> sim {class: flow}
+core -> service {class: flow}
+opt -> sim {class: flow}

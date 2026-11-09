@@ -362,3 +362,55 @@ def test_store_exports_a_replayable_trace(tmp_path):
         "train_done",
         "publish",
     } <= kinds
+
+
+def test_loadbench_times_every_request(tmp_path):
+    import pathlib
+
+    from rollout_engine.service import loadbench
+    from rollout_engine.trace import schema
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    assert loadbench.endpoint("POST", "/v1/workers/w3/heartbeat?x=1") == (
+        "POST /v1/workers/{id}/heartbeat"
+    )
+    assert loadbench.endpoint("GET", "/v1/status") == "GET /v1/status"
+    trace, _ = schema.read(str(root / "configs" / "traces" / "sample.csv"))
+    rows, info = asyncio.run(loadbench.session(2, 2, 400.0, trace, 60.0, str(tmp_path)))
+    assert info["completed"] and info["failure"] is None
+    assert info["steps"] == 2 and info["groups"] == 16 and info["samples"] == 128
+    sess = [r for r in rows if r["endpoint"] == "session"]
+    eps = {r["endpoint"]: r for r in rows if r["endpoint"] != "session"}
+    assert len(sess) == 1 and sess[0]["wall_status_5xx"] == 0
+    # requests still in flight when the session ends are cancelled and not counted
+    assert sess[0]["wall_requests"] == sum(r["wall_requests"] for r in eps.values())
+    assert "POST /v1/workers/{id}/heartbeat [poll]" in eps
+    assert {e for e, r in eps.items() if r["long_poll"]} == loadbench.LONG_POLL & set(eps)
+    for r in eps.values():
+        assert r["wall_p50_ms"] <= r["wall_p95_ms"] <= r["wall_p99_ms"] <= r["wall_max_ms"]
+    for f in tmp_path.rglob("*.db*"):  # the store is closed: its file can be removed
+        os.remove(f)
+
+
+def test_loadbench_records_a_timeout_and_releases_the_store(tmp_path, monkeypatch):
+    import pathlib
+
+    from rollout_engine.service import loadbench
+    from rollout_engine.trace import schema
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    trace, _ = schema.read(str(root / "configs" / "traces" / "sample.csv"))
+    rows, info = asyncio.run(loadbench.session(2, 2, 1.0, trace, 0.05, str(tmp_path)))
+    assert not info["completed"] and info["failure"].startswith("timeout")
+    assert any(r["endpoint"] == "session" for r in rows)
+    # a rejected submission is recorded and the teardown still finishes
+    monkeypatch.setattr(loadbench, "submit_payload", lambda trace: {"groups": "none"})
+    rows, info = asyncio.run(loadbench.session(2, 2, 1.0, trace, 60.0, str(tmp_path)))
+    assert not info["completed"] and info["failure"].startswith("RuntimeError: submission failed")
+    stores = list(tmp_path.rglob("*.db"))
+    assert len(stores) == 2  # one store per session, even for the same worker count
+    for f in tmp_path.rglob("*.db*"):
+        os.remove(f)
+    for steps in ("1", "9"):
+        out = tmp_path / f"out-{steps}"
+        assert loadbench.main(["--steps", steps, "--out", str(out)]) == 2 and not out.exists()

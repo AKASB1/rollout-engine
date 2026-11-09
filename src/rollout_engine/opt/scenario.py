@@ -22,7 +22,7 @@ import numpy as np
 from scipy.optimize import Bounds, LinearConstraint, milp
 from scipy.sparse import coo_matrix
 
-from rollout_engine.opt.milp import MilpResult, segments
+from rollout_engine.opt.milp import MilpResult, milp_status, segments
 from rollout_engine.rng import stream
 
 
@@ -123,16 +123,7 @@ def solve_cvar(
         },
     )
     wall, cpu = time.perf_counter() - t0, time.process_time() - c0
-    msg = (res.message or "").lower()
-    status = (
-        "optimal"
-        if res.status == 0
-        else (
-            "solver_capped"
-            if (res.status == 1 and "time" in msg)
-            else ("node_limit" if res.status == 1 else "error")
-        )
-    )
+    status = milp_status(res)
     plan: list[list[tuple[int, int]]] = [[] for _ in range(W)]
     if res.x is not None:
         for g, seg in enumerate(segs):

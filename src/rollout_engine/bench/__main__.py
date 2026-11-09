@@ -107,6 +107,17 @@ def evaluate(args, cfg, tuned) -> int:
     if tuned is None and not quick:
         log("configs/tuned/tuned.json is missing: run `python -m rollout_engine.bench tune` first")
         return 2
+    tuned_matches = tuned is not None and tuned.get("config_hash") == config_hash(cfg)
+    if tuned is not None and not tuned_matches:
+        msg = (
+            f"configs/tuned/tuned.json was tuned for configuration {tuned.get('config_hash')}, "
+            f"configs/experiments.json is now {config_hash(cfg)}: "
+            "re-run `python -m rollout_engine.bench tune` first"
+        )
+        if not quick:
+            log(msg)
+            return 2
+        log("warning: " + msg + " (quick mode continues with the stale tuning)")
     mode = "quick" if quick else "full"
     out = args.out or os.path.join("benchmarks", "results", mode)
     cells = build_cells(cfg, tuned, quick, only)
@@ -243,6 +254,7 @@ def evaluate(args, cfg, tuned) -> int:
         **git_state,
         "experiments_hash": config_hash(cfg),
         "tuned_hash": config_hash(tuned) if tuned else None,
+        "tuned_matches_config": tuned_matches,
         "tuned_commit_note": "configs/tuned/tuned.json as committed at the commit above",
         "cells_hash": cells_hash(cells),
         "seeds": sorted({r["seed"] for r in rows}),
@@ -279,7 +291,7 @@ def main(argv=None) -> int:
     ap.add_argument(
         "--workers", type=int, default=int(os.environ.get("BENCH_WORKERS", default_workers()))
     )
-    ap.add_argument("--only", default="", help="comma-separated scenario ids (S1..S7, SENS)")
+    ap.add_argument("--only", default="", help="comma-separated scenario ids (S1..S10, SENS)")
     ap.add_argument(
         "--out", default="", help="output directory (default benchmarks/results/<mode>)"
     )
